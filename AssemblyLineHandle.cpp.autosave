@@ -1,0 +1,126 @@
+#include "AssemblyLineHandle.h"
+#include <QDebug>
+
+
+static QMutex assembly_line_mutex;
+
+AssemblyLineHandle::AssemblyLineHandle(QDomElement assembly_line)
+{
+    this->assembly_line = assembly_line;
+}
+
+void AssemblyLineHandle::run()
+{
+    while(true)
+    {
+        switch(this->get_state())
+        {
+            case 0:
+
+            break;
+
+            case 1:
+                this->do_work();
+            break;
+
+            case 2:
+
+            break;
+
+            default:
+            break;
+
+        }
+
+    }
+}
+
+void AssemblyLineHandle::do_work()
+{
+    switch(this->sub_state)
+    {
+        case sub_state0:
+            if(this->count < this->assembly_line.attribute("times").toShort())
+            {
+                this->sub_state = sub_state1;
+                this->process = this->assembly_line.firstChildElement();
+            }
+            else 
+            {
+               this->set_state(0); 
+            }
+        break;
+        
+        case sub_state1:
+            if(this->process.tagName() == "robot")
+            {
+                if(process.attribute("lock") == "acquire")
+                {
+
+                }
+                
+                if(process.attribute("action") == "move_joint")
+                {
+                    assembly_line_mutex.lock();
+                    qDebug() << "acquire" << this->assembly_line.attribute("id");
+                }
+                                
+                
+                if(process.attribute("action") == "move_line")
+                {
+                    assembly_line_mutex.lock();
+                    qDebug() << "acquire" << this->assembly_line.attribute("id");
+                }
+                                                                     
+                
+                if(process.attribute("lock") == "release")
+                {
+                    assembly_line_mutex.lock();
+                    qDebug() << "release" << this->assembly_line.attribute("id");
+                }
+            }
+        break;
+            
+        
+        default:
+        break;
+    }
+}
+
+void AssemblyLineHandle::set_state(int state)
+{
+    QMutexLocker m_locker(&this->mutex);
+    this->assembly_line_state = state;
+}
+
+int AssemblyLineHandle::get_state()
+{
+    QMutexLocker m_locker(&this->mutex);
+    return this->assembly_line_state;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

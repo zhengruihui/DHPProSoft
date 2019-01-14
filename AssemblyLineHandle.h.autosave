@@ -1,0 +1,38 @@
+#ifndef ASSEMBLY_LINE_H
+#define ASSEMBLY_LINE_H
+#include <QThread>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QDomDocument>
+
+
+class AssemblyLineHandle : public QThread
+{
+    Q_OBJECT
+    enum SubState
+    {
+        sub_state0,
+        sub_state1,
+        sub_state2,
+        sub_state3,
+        sub_state4,
+        sub_state5,
+        sub_state6       
+    };
+public:
+    AssemblyLineHandle(QDomElement assembly_line);
+    void run();
+    void do_work();
+    void set_state(int state);
+    int get_state();
+    int assembly_line_state;
+
+    QDomElement assembly_line;
+    QDomElement process;
+    QMutex mutex;
+    SubState sub_state;
+    quint16 count;
+
+};
+
+#endif // ASSEMBLY_LINE_H
