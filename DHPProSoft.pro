@@ -27,15 +27,17 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    AssemblyLineHandle.cpp \
-    ParseXml.cpp \
-    robot.cpp
+    assemblyline.cpp \
+    multiprocess.cpp \
+    robot.cpp \
+    example.cpp
 
 HEADERS += \
         mainwindow.h \
-    AssemblyLineHandle.h \
-    ParseXml.h \
-    Robot.h
+    assemblyline.h \
+    mutilprocess.h \
+    robot.h \
+    example.h
 
 FORMS += \
         mainwindow.ui

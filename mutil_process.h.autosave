@@ -5,8 +5,26 @@
 #include <QMutexLocker>
 #include <QDomDocument>
 
+class MultiProcess
+{
+public:
+    MultiProcess();
+    void parse_xml(QString name);
+};
 
-class AssemblyLineHandle : public QThread
+
+
+
+class ShareMemory
+{
+public:
+    QString device;
+    QString action;
+    float joint[6];
+    float axis[3];
+};
+
+class AssemblyLine : public QThread
 {
     Q_OBJECT
     enum SubState
@@ -20,7 +38,7 @@ class AssemblyLineHandle : public QThread
         sub_state6       
     };
 public:
-    AssemblyLineHandle(QDomElement assembly_line);
+    AssemblyLine(QDomElement assembly_line);
     void run();
     void do_work();
     void set_state(int state);
@@ -33,6 +51,15 @@ public:
     SubState sub_state;
     quint16 count;
 
+    ShareMemory share_memory;
+    QMutex share_memory_mutex;
+    void acquire();
+    void release();
+
+
+
 };
+
+
 
 #endif // ASSEMBLY_LINE_H

@@ -1,15 +1,15 @@
-#include "AssemblyLineHandle.h"
+#include "mutil_process.h"
 #include <QDebug>
 
 
 static QMutex assembly_line_mutex;
 
-AssemblyLineHandle::AssemblyLineHandle(QDomElement assembly_line)
+AssemblyLine::AssemblyLine(QDomElement assembly_line)
 {
     this->assembly_line = assembly_line;
 }
 
-void AssemblyLineHandle::run()
+void AssemblyLine::run()
 {
     while(true)
     {
@@ -35,7 +35,7 @@ void AssemblyLineHandle::run()
     }
 }
 
-void AssemblyLineHandle::do_work()
+void AssemblyLine::do_work()
 {
     switch(this->sub_state)
     {
@@ -64,16 +64,26 @@ void AssemblyLineHandle::do_work()
     }
 }
 
-void AssemblyLineHandle::set_state(int state)
+void AssemblyLine::set_state(int state)
 {
     QMutexLocker m_locker(&this->mutex);
     this->assembly_line_state = state;
 }
 
-int AssemblyLineHandle::get_state()
+int AssemblyLine::get_state()
 {
     QMutexLocker m_locker(&this->mutex);
     return this->assembly_line_state;
+}
+
+void AssemblyLine::acquire()
+{
+    this->share_memory_mutex.lock();
+}
+
+void AssemblyLine::release()
+{
+    this->share_memory_mutex.unlock();
 }
 
 

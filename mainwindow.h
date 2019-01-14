@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "ParseXml.h"
+#include "mutilprocess.h"
 
 namespace Ui {
 class MainWindow;
@@ -15,7 +15,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    ParseXml *parse_xml;
+
+    MultiProcess multi_process;
 
 private slots:
     void on_startPushButton_clicked();
