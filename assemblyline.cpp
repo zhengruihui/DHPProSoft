@@ -61,6 +61,7 @@ void AssemblyLine::do_work()
             {
                 this->acquire();
                 this->share_memory.device = "robot";
+
                 if(this->process.attribute("action") == "move_joint")
                 {
                     this->share_memory.action = "move_joint";
@@ -78,6 +79,7 @@ void AssemblyLine::do_work()
                     this->share_memory.pos.x = this->process.attribute("x").toDouble() / 1000;
                     this->share_memory.pos.y = this->process.attribute("y").toDouble() / 1000;
                     this->share_memory.pos.z = this->process.attribute("z").toDouble() / 1000;
+                    this->share_memory.joint[5] = this->process.attribute("joint5").toDouble()*M_PI / 180;
                 }
 
                 if(this->process.attribute("action") == "move_pos")
@@ -91,6 +93,24 @@ void AssemblyLine::do_work()
                 if(this->process.attribute("action") == "move_arc")
                 {
                     this->share_memory.action = "move_arc";
+                    this->share_memory.pos.x = this->process.attribute("x").toDouble() / 1000;
+                    this->share_memory.pos.y = this->process.attribute("y").toDouble() / 1000;
+                    this->share_memory.pos.z = this->process.attribute("z").toDouble() / 1000;
+                    this->share_memory.r = this->process.attribute("r").toDouble() / 1000;
+                    this->share_memory.times = this->process.attribute("times").toInt();
+                }
+
+                if(this->process.attribute("action") == "set_speed")
+                {
+                    this->share_memory.action = "set_speed";
+                    this->share_memory.speed.lineacc = this->process.attribute("lineacc").toDouble() / 1000;
+                    this->share_memory.speed.linevelc = this->process.attribute("linevelc").toDouble() / 1000;
+
+                    this->share_memory.speed.jointacc = this->process.attribute("jointacc").toDouble()*M_PI / 180;
+                    this->share_memory.speed.jointvelc = this->process.attribute("jointvelc").toDouble()*M_PI / 180;
+
+                    this->share_memory.speed.angleacc = this->process.attribute("angleacc").toDouble()*M_PI / 180;
+                    this->share_memory.speed.anglevelc = this->process.attribute("anglevelc").toDouble()*M_PI / 180;
                 }
 
                 this->share_memory.IPC = SET;

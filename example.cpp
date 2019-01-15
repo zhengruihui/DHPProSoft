@@ -138,7 +138,7 @@ bool move_pos(RSHD rshd, const Pos *pos)
 
     return  :	true 成功 false 失败
 *********************************************************************/
-bool move_line(RSHD rshd, const Pos *pos)
+bool move_line(RSHD rshd, const Pos *pos, double joint5)
 {
     bool result = false;
 
@@ -163,7 +163,7 @@ bool move_line(RSHD rshd, const Pos *pos)
             targetRadian[2] = targetPoint.jointpos[2];
             targetRadian[3] = targetPoint.jointpos[3];
             targetRadian[4] = targetPoint.jointpos[4];
-            targetRadian[5] = targetPoint.jointpos[5];
+            targetRadian[5] = joint5;
 
             //轴动到目标位置
             if (RS_SUCC == rs_move_line(rshd, targetRadian))
@@ -198,7 +198,7 @@ bool move_line(RSHD rshd, const Pos *pos)
                 port 机械臂服务器端口
     return  :	true 成功 false 失败
 *********************************************************************/
-bool move_arc(RSHD rshd)
+bool move_arc(RSHD rshd, const Pos *center, double r, int times)
 {
     bool result = false;
 
@@ -211,19 +211,19 @@ bool move_arc(RSHD rshd)
     //目标位置对应的关节角
     double targetRadian[ARM_DOF] = {0};
 
-    struct Pos pos[3];
+    Pos pos[3];
 
-    pos[0].x = -118.96865240727046 /1000;
-    pos[0].y = -200.5580682043296 /1000;
-    pos[0].z = 438.20344608262460 /1000;
+    pos[0].x = center->x;
+    pos[0].y = center->y - r;
+    pos[0].z = center->z;
 
-    pos[1].x = -140.96865240727046 /1000;
-    pos[1].y = -220.5580682043296 /1000;
-    pos[1].z = 438.20344608262460 /1000;
+    pos[1].x = center->x - r;
+    pos[1].y = center->y;
+    pos[1].z = center->z;
 
-    pos[2].x = -100.96865240727046 /1000;
-    pos[2].y = -220.5580682043296 /1000;
-    pos[2].z = 438.20344608262460 /1000;
+    pos[2].x = center->x;
+    pos[2].y = center->y + r;
+    pos[2].z = center->z;
 
 
     if (RS_SUCC == rs_get_current_waypoint(rshd, &wayPoint))
@@ -248,7 +248,7 @@ bool move_arc(RSHD rshd)
                 return result;
             }
         }
-        rs_set_circular_loop_times(rshd, 0);
+        rs_set_circular_loop_times(rshd, times);
         if(RS_SUCC !=rs_move_track(rshd, ARC_CIR))
         {
             std::cerr <<"TrackMove failed.　ret:" << std::endl;
@@ -260,9 +260,6 @@ bool move_arc(RSHD rshd)
     {
         std::cerr<<"get current waypoint error"<<std::endl;
     }
-
-    //圆弧
-    rs_init_global_move_profile(rshd);
 
     return result;
 }
@@ -838,3 +835,33 @@ void demo_relativeOri(RSHD rshd)
 	rs_move_line(rshd, wayPoint.jointpos);
 
 }
+
+void set_speed(RSHD rshd, struct Speed speed)
+{
+    JointVelcAccParam joint_acc_param;
+    rs_init_global_move_profile(rshd);
+    for(int i=0; i<6;i++)
+    {
+        joint_acc_param.jointPara[i] = speed.jointacc;
+    }
+    rs_set_global_joint_maxacc(rshd, &joint_acc_param);
+
+    JointVelcAccParam joint_velc_param;
+    for(int i=0; i<6;i++)
+    {
+        joint_velc_param.jointPara[i] = speed.jointvelc;
+    }
+    rs_set_global_joint_maxvelc(rshd, &joint_velc_param);
+
+    rs_set_global_end_max_line_acc(rshd,  speed.lineacc);
+
+
+    rs_set_global_end_max_line_velc(rshd, speed.linevelc);
+
+    rs_set_global_end_max_angle_acc(rshd, speed.angleacc);
+
+
+    rs_set_global_end_max_angle_velc(rshd, speed.anglevelc);
+
+}
+

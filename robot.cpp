@@ -61,7 +61,7 @@ void Robot::run()
                     if(this->assembly_line_list.at(i)->share_memory.action == "move_line")
                     {
                        qDebug() << "robot: move_line" << i;
-                       move_line(this->g_rshd, &this->assembly_line_list.at(i)->share_memory.pos);
+                       move_line(this->g_rshd, &this->assembly_line_list.at(i)->share_memory.pos, this->assembly_line_list.at(i)->share_memory.joint[5]);
                     }
                     if(this->assembly_line_list.at(i)->share_memory.action == "move_pos")
                     {
@@ -71,7 +71,12 @@ void Robot::run()
                     if(this->assembly_line_list.at(i)->share_memory.action == "move_arc")
                     {
                        qDebug() << "robot: move_arc" << i;
-                       move_arc(this->g_rshd);
+                       move_arc(this->g_rshd, &this->assembly_line_list.at(i)->share_memory.pos, this->assembly_line_list.at(i)->share_memory.r, this->assembly_line_list.at(i)->share_memory.times);
+                    }
+                    if(this->assembly_line_list.at(i)->share_memory.action == "set_speed")
+                    {
+                       qDebug() << "robot: set_speed" << i;
+                       set_speed(this->g_rshd, this->assembly_line_list.at(i)->share_memory.speed);
                     }
                 }
                 this->assembly_line_list.at(i)->share_memory.IPC = CLEAR;

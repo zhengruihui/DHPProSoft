@@ -6,6 +6,9 @@
 #include "rsdef.h"
 #define SET 1
 #define CLEAR 0
+#include "example.h"
+
+
 
 class ShareMemory
 {
@@ -15,7 +18,9 @@ public:
     QString action;
     double joint[6];
     struct Pos pos;
-
+    double r;
+    int times;
+    struct Speed speed;
 };
 
 class AssemblyLine : public QThread
