@@ -1,7 +1,5 @@
 ﻿#include "example.h"
-
 #define M_PI 3.14159265358979323846
-
 //控制柜用户ＤＩ名称
 const char* USER_DI_00 = "U_DI_00";
 const char* USER_DI_01 = "U_DI_01";
@@ -138,7 +136,7 @@ bool move_pos(RSHD rshd, const Pos *pos)
 
     return  :	true 成功 false 失败
 *********************************************************************/
-bool move_line(RSHD rshd, const Pos *pos, double joint5)
+bool move_line(RSHD rshd, const Pos *pos)
 {
     bool result = false;
 
@@ -163,7 +161,7 @@ bool move_line(RSHD rshd, const Pos *pos, double joint5)
             targetRadian[2] = targetPoint.jointpos[2];
             targetRadian[3] = targetPoint.jointpos[3];
             targetRadian[4] = targetPoint.jointpos[4];
-            targetRadian[5] = joint5;
+            targetRadian[5] = targetPoint.jointpos[5];
 
             //轴动到目标位置
             if (RS_SUCC == rs_move_line(rshd, targetRadian))
@@ -192,10 +190,11 @@ bool move_line(RSHD rshd, const Pos *pos, double joint5)
 
 /********************************************************************
     function:	move_arc
-    purpose :	登陆机械臂
+    purpose :	走圆轨迹
     param   :	rshd 输出上下文句柄
-                addr 机械臂服务器地址
-                port 机械臂服务器端口
+                center 圆在平面的圆心
+                times 旋转次数
+                r 半径
     return  :	true 成功 false 失败
 *********************************************************************/
 bool move_arc(RSHD rshd, const Pos *center, double r, int times)
@@ -213,7 +212,7 @@ bool move_arc(RSHD rshd, const Pos *center, double r, int times)
 
     Pos pos[3];
 
-    pos[0].x = center->x;
+    pos[0].x = center->x;  //center为圆心
     pos[0].y = center->y - r;
     pos[0].z = center->z;
 
@@ -226,39 +225,57 @@ bool move_arc(RSHD rshd, const Pos *center, double r, int times)
     pos[2].z = center->z;
 
 
-    if (RS_SUCC == rs_get_current_waypoint(rshd, &wayPoint))
+
+    for(int m=0; m<3; m++)
     {
-        //参考当前姿态逆解得到六个关节角
-        for(int i=0; i<3;i++)
+
+        if (RS_SUCC == rs_get_current_waypoint(rshd, &wayPoint))
         {
-            if (RS_SUCC == rs_inverse_kin(rshd, wayPoint.jointpos, &pos[i], &wayPoint.orientation, &targetPoint))
+            //参考当前姿态逆解得到六个关节角
+            for(int i=0; i<3;i++)
             {
-                targetRadian[0] = targetPoint.jointpos[0];
-                targetRadian[1] = targetPoint.jointpos[1];
-                targetRadian[2] = targetPoint.jointpos[2];
-                targetRadian[3] = targetPoint.jointpos[3];
-                targetRadian[4] = targetPoint.jointpos[4];
-                targetRadian[5] = targetPoint.jointpos[5];
-                 rs_add_waypoint(rshd, targetRadian);
+                if (RS_SUCC == rs_inverse_kin(rshd, wayPoint.jointpos, &pos[i], &wayPoint.orientation, &targetPoint))
+                {
+                    targetRadian[0] = targetPoint.jointpos[0];
+                    targetRadian[1] = targetPoint.jointpos[1];
+                    targetRadian[2] = targetPoint.jointpos[2];
+                    targetRadian[3] = targetPoint.jointpos[3];
+                    targetRadian[4] = targetPoint.jointpos[4];
+                    targetRadian[5] = targetPoint.jointpos[5];
+                    rs_add_waypoint(rshd, targetRadian);
 
+                }
+                else
+                {
+                    std::cerr<<"ik failed"<<std::endl;
+                    return result;
+                }
             }
-            else
+            rs_set_circular_loop_times(rshd, times);
+             rs_init_global_move_profile(rshd);
+            if(RS_SUCC !=rs_move_track(rshd, ARC_CIR))
             {
-                std::cerr<<"ik failed"<<std::endl;
-                return result;
+                std::cerr <<"TrackMove failed.　ret:" << std::endl;
             }
+            rs_remove_all_waypoint(rshd);
+
+
+
         }
-        rs_set_circular_loop_times(rshd, times);
-        if(RS_SUCC !=rs_move_track(rshd, ARC_CIR))
+        else
         {
-            std::cerr <<"TrackMove failed.　ret:" << std::endl;
+            std::cerr<<"get current waypoint error"<<std::endl;
         }
 
+        for(int n=0; n<3;n++)
+        {
+            pos[n].z += 0.001;
+        }
 
-    }
-    else
-    {
-        std::cerr<<"get current waypoint error"<<std::endl;
+        move_line(rshd, &pos[0]);
+
+
+
     }
 
     return result;
@@ -855,13 +872,30 @@ void set_speed(RSHD rshd, struct Speed speed)
 
     rs_set_global_end_max_line_acc(rshd,  speed.lineacc);
 
-
     rs_set_global_end_max_line_velc(rshd, speed.linevelc);
 
     rs_set_global_end_max_angle_acc(rshd, speed.angleacc);
-
 
     rs_set_global_end_max_angle_velc(rshd, speed.anglevelc);
 
 }
 
+void open_claw(RSHD rshd)
+{
+    rs_set_board_io_status_by_name(rshd, RobotBoardUserDO, USER_DO_00, 0);
+}
+
+void clos_claw(RSHD rshd)
+{
+    rs_set_board_io_status_by_name(rshd, RobotBoardUserDO, USER_DO_00, 1);
+}
+
+void open_cnc(RSHD rshd)
+{
+    rs_set_board_io_status_by_name(rshd, RobotBoardUserDO, USER_DO_01, 1);
+}
+
+void clos_cnc(RSHD rshd)
+{
+    rs_set_board_io_status_by_name(rshd, RobotBoardUserDO, USER_DO_01, 0);
+}

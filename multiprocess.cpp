@@ -7,7 +7,7 @@
 
 MultiProcess::MultiProcess()
 {
-
+    this->mutex = new QMutex();
 }
 
 void MultiProcess::parse_xml(QString name)

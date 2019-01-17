@@ -17,6 +17,7 @@ public:
 
     QList<AssemblyLine*> assembly_line_list;
     Robot *robot;
+    QMutex *mutex;
 };
 
 #endif // ASSEMBLY_LINE_H

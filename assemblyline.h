@@ -40,13 +40,13 @@ public:
     AssemblyLine(QDomElement assembly_line);
     void run();
     void do_work();
+    QMutex mutex;
     void set_state(int state);
     int get_state();
     int state;
 
     QDomElement assembly_line;
     QDomElement process;
-    QMutex mutex;
     SubState sub_state;
     quint16 count;
 

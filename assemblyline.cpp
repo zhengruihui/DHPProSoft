@@ -131,6 +131,80 @@ void AssemblyLine::do_work()
                 }
 
             }
+            if(this->process.tagName() == "claw")
+            {
+                this->acquire();
+                this->share_memory.device = "claw";
+                if(this->process.attribute("action") == "open")
+                {
+                    this->share_memory.action = "open";
+                    this->share_memory.IPC = SET;
+                }
+
+                if(this->process.attribute("action") == "close")
+                {
+                    this->share_memory.action = "close";
+                    this->share_memory.IPC = SET;
+                }
+                this->release();
+
+            }
+            if(this->process.tagName() == "cnc")
+            {
+                this->acquire();
+                this->share_memory.device = "cnc";
+                if(this->process.attribute("action") == "open")
+                {
+                    this->share_memory.action = "open";
+                    this->share_memory.IPC = SET;
+                }
+
+                if(this->process.attribute("action") == "close")
+                {
+                    this->share_memory.action = "close";
+                    this->share_memory.IPC = SET;
+                }
+                this->release();
+
+            }
+            if(this->process.tagName() == "fdm")
+            {
+                this->acquire();
+                this->share_memory.device = "fdm";
+                if(this->process.attribute("action") == "start")
+                {
+                    this->share_memory.action = "start";
+                    this->share_memory.IPC = SET;
+                }
+                this->release();
+
+            }
+            if(this->process.tagName() == "motion")
+            {
+                this->acquire();
+                this->share_memory.device = "motion";
+                if(this->process.attribute("action") == "move_x")
+                {
+                    this->share_memory.action = "move_x";
+                    this->share_memory.IPC = SET;
+                }
+                this->release();
+
+            }
+
+            if(this->process.tagName() == "motion")
+            {
+                this->acquire();
+                this->share_memory.device = "motion";
+                if(this->process.attribute("action") == "move_y")
+                {
+                    this->share_memory.action = "move_y";
+                    this->share_memory.IPC = SET;
+                }
+                this->release();
+
+            }
+
             this->sub_state = sub_state2;
         break;
         case sub_state2:

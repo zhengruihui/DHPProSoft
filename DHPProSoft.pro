@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT += xml
+QT += network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = DHPProSoft
@@ -30,14 +31,16 @@ SOURCES += \
     assemblyline.cpp \
     multiprocess.cpp \
     robot.cpp \
-    example.cpp
+    example.cpp \
+    udp_clint.cpp
 
 HEADERS += \
         mainwindow.h \
     assemblyline.h \
     mutilprocess.h \
     robot.h \
-    example.h
+    example.h \
+    udp_clint.h
 
 FORMS += \
         mainwindow.ui
@@ -50,13 +53,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 contains(QT_ARCH, i386) {
-    message("32-bit")
     INCLUDEPATH += $$PWD/dependens-x86/auboi5/inc
     win32: LIBS += -L$$PWD/dependens-x86/auboi5/dll/ -llibserviceinterface
     INCLUDEPATH += $$PWD/dependens-x86/auboi5/dll
     DEPENDPATH += $$PWD/dependens-x86/auboi5/dll
 } else {
-    message("64-bit")
     INCLUDEPATH += $$PWD/dependens-x64/auboi5/inc
     win32: LIBS += -L$$PWD/dependens-x64/auboi5/dll/ -llibserviceinterface
     INCLUDEPATH += $$PWD/dependens-x64/auboi5/dll
