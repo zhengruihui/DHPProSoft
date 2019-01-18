@@ -186,6 +186,7 @@ void AssemblyLine::do_work()
                 if(this->process.attribute("action") == "move_x")
                 {
                     this->share_memory.action = "move_x";
+                    this->share_memory.distance_x = this->process.attribute("x").toFloat();
                     this->share_memory.IPC = SET;
                 }
                 this->release();
@@ -199,6 +200,7 @@ void AssemblyLine::do_work()
                 if(this->process.attribute("action") == "move_y")
                 {
                     this->share_memory.action = "move_y";
+                    this->share_memory.distance_y = this->process.attribute("y").toFloat();
                     this->share_memory.IPC = SET;
                 }
                 this->release();

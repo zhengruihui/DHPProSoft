@@ -21,6 +21,8 @@ public:
     double r;
     int times;
     struct Speed speed;
+    float distance_x;
+    float distance_y;
 };
 
 class AssemblyLine : public QThread

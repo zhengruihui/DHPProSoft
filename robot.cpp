@@ -125,7 +125,7 @@ void Robot::run()
                     if(this->assembly_line_list.at(i)->share_memory.action == "move_x")
                     {
                         qDebug() << "motion: move_x:" << i;
-                        this->udp_clint.motion(0, 0);
+                        this->udp_clint.motion(0, this->assembly_line_list.at(i)->share_memory.distance_x);
                         this->assembly_line_list.at(i)->share_memory.action = "wait_x";
 
                     }
@@ -143,7 +143,7 @@ void Robot::run()
                     if(this->assembly_line_list.at(i)->share_memory.action == "move_y")
                     {
                         qDebug() << "motion: move_y:" << i;
-                        this->udp_clint.motion(1, 0);
+                        this->udp_clint.motion(1, this->assembly_line_list.at(i)->share_memory.distance_y);
                         this->assembly_line_list.at(i)->share_memory.action = "wait_y";
 
                     }

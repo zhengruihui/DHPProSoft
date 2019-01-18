@@ -32,7 +32,7 @@ SOURCES += \
     multiprocess.cpp \
     robot.cpp \
     example.cpp \
-    udp_clint.cpp
+    protocol.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -40,7 +40,7 @@ HEADERS += \
     mutilprocess.h \
     robot.h \
     example.h \
-    udp_clint.h
+    protocol.h
 
 FORMS += \
         mainwindow.ui

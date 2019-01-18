@@ -26,11 +26,11 @@ struct Upload
 };
 
 
-class UdpClint : public QObject
+class Protocol : public QObject
 {
     Q_OBJECT
 public:
-    UdpClint();
+    Protocol();
 
     QUdpSocket *udpSocket;
     struct Download download;

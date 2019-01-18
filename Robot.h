@@ -3,7 +3,7 @@
 #include <QThread>
 #include "assemblyline.h"
 #include "example.h"
-#include "udp_clint.h"
+#include "protocol.h"
 
 class Robot : public QThread
 {
@@ -15,7 +15,7 @@ public:
     void run();
 
     QList<AssemblyLine*> assembly_line_list;
-    UdpClint udp_clint;
+    Protocol udp_clint;
     RSHD g_rshd = -1;
 
 };

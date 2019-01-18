@@ -226,7 +226,7 @@ bool move_arc(RSHD rshd, const Pos *center, double r, int times)
 
 
 
-    for(int m=0; m<3; m++)
+    for(int m=0; m<25; m++)
     {
 
         if (RS_SUCC == rs_get_current_waypoint(rshd, &wayPoint))
@@ -252,7 +252,6 @@ bool move_arc(RSHD rshd, const Pos *center, double r, int times)
                 }
             }
             rs_set_circular_loop_times(rshd, times);
-             rs_init_global_move_profile(rshd);
             if(RS_SUCC !=rs_move_track(rshd, ARC_CIR))
             {
                 std::cerr <<"TrackMove failed.　ret:" << std::endl;
@@ -269,7 +268,7 @@ bool move_arc(RSHD rshd, const Pos *center, double r, int times)
 
         for(int n=0; n<3;n++)
         {
-            pos[n].z += 0.001;
+            pos[n].z += 0.0005;
         }
 
         move_line(rshd, &pos[0]);
@@ -882,12 +881,12 @@ void set_speed(RSHD rshd, struct Speed speed)
 
 void open_claw(RSHD rshd)
 {
-    rs_set_board_io_status_by_name(rshd, RobotBoardUserDO, USER_DO_00, 0);
+    rs_set_board_io_status_by_name(rshd, RobotBoardUserDO, USER_DO_00, 1);
 }
 
 void clos_claw(RSHD rshd)
 {
-    rs_set_board_io_status_by_name(rshd, RobotBoardUserDO, USER_DO_00, 1);
+    rs_set_board_io_status_by_name(rshd, RobotBoardUserDO, USER_DO_00, 0);
 }
 
 void open_cnc(RSHD rshd)
