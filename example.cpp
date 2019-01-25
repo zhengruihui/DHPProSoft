@@ -136,7 +136,7 @@ bool move_pos(RSHD rshd, const Pos *pos)
 
     return  :	true 成功 false 失败
 *********************************************************************/
-bool move_line(RSHD rshd, const Pos *pos)
+bool move_line(RSHD rshd, const Pos *pos, double joint5)
 {
     bool result = false;
 
@@ -164,7 +164,41 @@ bool move_line(RSHD rshd, const Pos *pos)
             targetRadian[5] = targetPoint.jointpos[5];
 
             //轴动到目标位置
-            if (RS_SUCC == rs_move_line(rshd, targetRadian))
+             if (RS_SUCC == rs_move_line(rshd, targetRadian))
+            {
+                std::cout<<"at target"<<std::endl;
+            }
+            else
+            {
+                std::cerr<<"move joint error"<<std::endl;
+            }
+        }
+        else
+        {
+            std::cerr<<"ik failed"<<std::endl;
+        }
+
+    }
+    else
+    {
+        std::cerr<<"get current waypoint error"<<std::endl;
+    }
+
+    if (RS_SUCC == rs_get_current_waypoint(rshd, &wayPoint))
+    {
+        //参考当前姿态逆解得到六个关节角
+        if (RS_SUCC == rs_inverse_kin(rshd, wayPoint.jointpos, pos, &wayPoint.orientation, &targetPoint))
+        {
+            //将得到目标位置,将6关节角度设置为用户给定的角度（必须在+-175度）
+            targetRadian[0] = targetPoint.jointpos[0];
+            targetRadian[1] = targetPoint.jointpos[1];
+            targetRadian[2] = targetPoint.jointpos[2];
+            targetRadian[3] = targetPoint.jointpos[3];
+            targetRadian[4] = targetPoint.jointpos[4];
+            targetRadian[5] = joint5;
+
+            //轴动到目标位置
+             if (RS_SUCC == rs_move_joint(rshd, targetRadian))
             {
                 std::cout<<"at target"<<std::endl;
             }
@@ -226,7 +260,7 @@ bool move_arc(RSHD rshd, const Pos *center, double r, int times)
 
 
 
-    for(int m=0; m<25; m++)
+    for(int m=0; m<20; m++)
     {
 
         if (RS_SUCC == rs_get_current_waypoint(rshd, &wayPoint))
@@ -271,7 +305,7 @@ bool move_arc(RSHD rshd, const Pos *center, double r, int times)
             pos[n].z += 0.0005;
         }
 
-        move_line(rshd, &pos[0]);
+        move_line(rshd, &pos[0], targetPoint.jointpos[5]);
 
 
 

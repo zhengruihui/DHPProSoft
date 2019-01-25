@@ -52,7 +52,7 @@ bool example_callbackRobotRoadPoint(RSHD rshd);
 
 bool move_pos(RSHD rshd, const Pos *pos);
 //机械臂保持当前姿态直线运动测试
-bool move_line(RSHD rshd, const Pos *pos);
+bool move_line(RSHD rshd, const Pos *pos, double joint5);
 bool move_arc(RSHD rshd, const Pos *center, double r, int times);
 void set_speed(RSHD rshd, struct Speed);
 void open_claw(RSHD rshd);
